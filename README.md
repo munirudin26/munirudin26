@@ -1,8 +1,33 @@
 ## Hai selamat datang
 <!--
 **munirudin26/munirudin26** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
-Here are some ideas to get you started:
-- 🔭 I’m currently working on ...
-- 🌱 I’m currently learning ...
+----------------------------------------------------------------tutor
+https://youtu.be/Z_Q9kzPUhVg?si=Bf0nblElBjl8n8vl
+Chapter:
+0:00 Intro & Pendahuluan
+3:15 Step Pertama (Level Basic)
+12:14 Menambahkan Elemen Grafis (Level Intermediate)
+23:50 Github Profile Generator (Level Advance)
+28:18 Github Action / Workflow (Level Elite)
+34:50 Closing
+------------------------------------------Dokumentasi Markdown GitHub
+https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/about-writing-and-formatting-on-github
+---------------------------------------------------------------GAMBAR
+https://tenor.com/id/
+https://giphy.com
+---------------------------------------------------------------Banner
+https://github.com/leviarista/github-profile-header-generator
+---------------------------------------------------------------Badges
+https://github.com/alexandresanlim/Badges4-README.md-Profile
+-----------------------------------------------------------------Icon
+https://github.com/tandpfun/skill-icons
+----------------------------------------------------------------Stats
+https://github.com/anuraghazra/github-readme-stats
+---------------------------------------------------Profile Generators
+https://gprm.itsvg.in/
+https://rahuldkjain.github.io/gh-profile-readme-generator/
+-------------------------------------------------------Pacman & Snake
+https://profile-readme-generator.com/
 -->
 ![ha](https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExb3FsN2t0MmE5eG5wZW1tN2RyMGZjcWlsZmNvcmtlN3NzdWo2Z21nNyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/T8BTS6sL9MZXjdyb56/giphy.gif)
+
