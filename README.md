@@ -13,7 +13,7 @@ Chapter:
 ------------------------------------------Dokumentasi Markdown GitHub
 https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/about-writing-and-formatting-on-github
 ---------------------------------------------------------------GAMBAR
-https://tenor.com/id/
+https://www.pexels.com/
 https://giphy.com
 ---------------------------------------------------------------Banner
 https://leviarista.github.io/github-profile-header-generator/
