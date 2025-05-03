@@ -31,7 +31,7 @@ https://rahuldkjain.github.io/gh-profile-readme-generator/
 https://profile-readme-generator.com/
 -->
 
-![]https://github.com/munirudin26/munirudin26/blob/main/img/github-header-image%20(1).png)
+![](https://github.com/munirudin26/munirudin26/blob/main/img/github-header-image%20(1).png)
 ![2](https://github.com/munirudin26/munirudin26/blob/main/img/archlinux-logo-dark-90dpi.ebdee92a15b3.png)
 ![](https://github.com/munirudin26/munirudin26/blob/main/img/61-Comparison-Kali-Linux-vs-BlackArch-Which-Penetration-Testing-Distro-is-Right-for-You.png)
 
