@@ -1,4 +1,4 @@
-# selamat datang 
+
 <!--
 **munirudin26/munirudin26** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
 ----------------------------------------------------------------tutor
@@ -32,6 +32,6 @@ https://profile-readme-generator.com/
 -->
 
 ![1](https://github.com/munirudin26/munirudin26/blob/main/img/github-header-image%20(1).png)
-![2]()
+![2](https://github.com/munirudin26/munirudin26/blob/main/img/archlinux-logo-dark-90dpi.ebdee92a15b3.png)
 ![]()
 
