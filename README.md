@@ -32,5 +32,6 @@ https://profile-readme-generator.com/
 -->
 
 ![](img/github-header-image.gif)
+![](Screenshot 2025-04-05 23.00.05.gif)
 ![]()
 
