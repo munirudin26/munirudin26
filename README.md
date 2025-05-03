@@ -33,5 +33,5 @@ https://profile-readme-generator.com/
 
 ![](img/github-header-image.gif)
 ![1](https://github.com/munirudin26/munirudin26/blob/main/img/Screenshot%202025-04-05%2023.00.05.jpg)
-![2](img/https://github.com/munirudin26/munirudin26/blob/main/img/Screenshot%202025-04-05%2023.00.05.jpg)
+![2](https://github.com/munirudin26/munirudin26/blob/main/img/3135811-hd_1920_1080_24fps.mp4)
 
