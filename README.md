@@ -32,6 +32,6 @@ https://profile-readme-generator.com/
 -->
 
 ![](img/github-header-image.gif)
-![](img/Screenshot 2025-04-05 23.00.05.gif)
-![]()
+![1](https://github.com/munirudin26/munirudin26/blob/main/img/Screenshot%202025-04-05%2023.00.05.jpg)
+![2](img/https://github.com/munirudin26/munirudin26/blob/main/img/Screenshot%202025-04-05%2023.00.05.jpg)
 
