@@ -31,7 +31,7 @@ https://rahuldkjain.github.io/gh-profile-readme-generator/
 https://profile-readme-generator.com/
 -->
 
-![](img/github-header-image (1).png)
-![1](https://github.com/munirudin26/munirudin26/blob/main/img/Screenshot%202025-04-05%2023.00.05.jpg)
-![2](https://github.com/munirudin26/munirudin26/blob/main/img/3135811-hd_1920_1080_24fps.mp4)
+![1](https://github.com/munirudin26/munirudin26/blob/main/img/github-header-image%20(1).png)
+![2]()
+![]()
 
