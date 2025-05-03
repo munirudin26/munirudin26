@@ -32,5 +32,5 @@ https://profile-readme-generator.com/
 -->
 
 ![](img/github-header-image.gif)
-![](Video by vjloopsDOT net from Pexels: https://www.pexels.com/video/an-octagon-shaped-tunnel-2759484/)
+![](https://www.pexels.com/video/an-octagon-shaped-tunnel-2759484/)
 
