@@ -34,8 +34,9 @@ https://profile-readme-generator.com/
 ![]()
 ![2](https://github.com/munirudin26/munirudin26/blob/main/img/archlinux-logo-dark-90dpi.ebdee92a15b3.png)
 ![]()
+# koleksi kemampuan
 <p align="center">
   <a href="https://skillicons.dev">
-    <img src="https://skillicons.dev/icons?i=cpp,dotnet,github,js,linkedin,linux,mysql,netlify,nodejs,vscode," />
+    <img src="https://skillicons.dev/icons?i=linkedin,linux,github,cpp,nodejs,nano,js,mysql,netlify,vscode" />
   </a>
 </p>
