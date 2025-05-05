@@ -36,6 +36,6 @@ https://profile-readme-generator.com/
 ![]()
 <p align="center">
   <a href="https://skillicons.dev">
-    <img src="https://skillicons.dev/icons?i=linux,debian,cpp,mysql,nodejs,npm,js,css,netlify,deno" />
+    <img src="https://skillicons.dev/icons?i=debian,cpp,mysql,nodejs,netlify" />
   </a>
 </p>
