@@ -1,0 +1,93 @@
+========================================================> LINUX
+cat /etc/os-release	: memeriksa versi Linux
+dokumentasi	https://www.debian.org/doc/index.id.html#manuals
+dokumentasi	https://wiki.archlinux.org/title/Main_page_(Bahasa_Indonesia)
+========================================================> CMD
+dokumentasi	https://linuxcommand.org/lc3_learning_the_shell.php
+> file.txt            : new file
+nano file.txt         : new/open file
+rm file.txt           : delete file
+rm -rf folder         : delete folder
+cp file.txt folder    : copy file to folder
+mv file.txt new.txt   : rename/move file/folder 
+========================================================> NANO
+dokumentasi	https://www.nano-editor.org/dist/latest/cheatsheet.html
+nano ~/.nanorc		: cutom short cut
+rm~/.nanorc		: delete custom short cut
+========================================================> G++
+dokumentasi	https://gcc.gnu.org/onlinedocs/gcc/
+dokumentasi	https://www.learncpp.com/
+g++ file.cpp -o file
+./file
+========================================================> GIT
+download file	: wget https://github.com/Munirudin26/mytxt/blob/main/git.txt
+		  curl -o https://github.com/Munirudin26/mytxt/blob/main/sql.txt
+upload file	: git clone https://github.com/Munirudin26/mytxt.git
+		  ls
+		  cp file.txt file.txt mytxt
+		  cd mytxt
+		  git init
+		  git add file.txt file.txt
+		  git add .
+		  git commit -m "masukan catatan"
+		  git push -u origin main
+======================================================> MYSQL
+tutorial	http
+dokumentasi	https://dev.mysql.com/doc/refman/8.4/en/
+--cek MySQL
+ps aux | grep mysql
+--cek port yang digunakan
+netstat -tuln | grep 3306
+--periksa daftar paket
+dpkg -l | grep mysql-server
+--cek unix_socket aktif apa tidak
+SELECT User, Host, Plugin FROM mysql.user WHERE User = 'root';
+--jika belum install MySQL server, gunakan ini
+sudo apt-get install mysql-server
+--tingkatkan keamanan installasi MySQL
+sudo mysql_secure_installation
+				1.apakah ingin mengaktifkan unix_socket Y/n y
+				2.apakah ingin menganti pasword root Y/n n
+				3.apakah ingin menghapus pengguna anonim? Y/n y
+				4.apakah ingin menonaktifkan akses root secara remote Y/n y
+				5.Hapus Database 'test'? Y/n y
+				6.Reload privilege tables now? Y/n y
+--Jika ingin kembali ke autentikasi berbasis kata sandi
+ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'your_password';
+
+--buat pengguna baru dan berikan hak akses
+CREATE USER 'root'@'localhost' IDENTIFIED BY 'password';
+GRANT ALL PRIVILEGES ON iventori.* TO 'root'@'localhost';
+FLUSH PRIVILEGES;
+--ganti password
+USE mysql;
+ALTER USER 'root'@'localhost' IDENTIFIED BY 'password baru';
+--jika eror
+ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'password baru';
+FLUSH PRIVILEGES;
+EXIT;
+
+=======================> NODE.JS <==========================
+tutorial https://youtu.be/sSLJx5t4OJ4?si=QoZcWgbJ1EKmwEKE
+dokumentasi https://nodejs.org/docs/latest/api/
+
+-- REPL Node.js
+node
+-- Di REPL dapat menjalankan kode JavaScript.
+> console.log("Munirudin Halo Dunia node.js");
+
+===================> UBUNTU FIRE WALL <===========================
+dokumentasi	https://help.ubuntu.com/community/UFW
+-- Instal UFW
+sudo apt install ufw
+-- Periksa Status UFW
+sudo ufw status
+-- Sebelum mengaktifkan UFW, atur kebijakan default untuk mengizinkan semua koneksi keluar dan menolak semua koneksi masuk
+sudo ufw default allow outgoing
+sudo ufw default deny incoming
+-- Aktifkan UFW
+sudo ufw enable
+-- Izinkan Koneksi yang Diperlukan SSH atau HTTP
+sudo ufw allow ssh
+-- Periksa Status UFW Lagi
+sudo ufw status verbose
