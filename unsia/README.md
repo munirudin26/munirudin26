@@ -11,10 +11,10 @@
 ⠀⠀⠴⠛⠙⣳⠋⠉⠉⠙⣆⠀⠀⢰⡟⠉⠈⠙⢷⠟⠈⠙⠂⠀
 ⠀⠀⠀⠀⠀⢻⣄⣠⣤⣴⠟⠛⠛⠛⢧⣤⣤⣀⡾⠀⠀⠀⠀⠀
 -->
+emoticon:
 https://emojicombos.com/aesthetic
 
-UPGRADE PROFILL
-tutor: https://youtu.be/Z_Q9kzPUhVg?si=Bf0nblElBjl8n8vl
+upgarde profil: https://youtu.be/Z_Q9kzPUhVg?si=Bf0nblElBjl8n8vl
 
 header:https://github.com/leviarista/github-profile-header-generator
 
