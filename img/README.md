@@ -1,1 +1,1 @@
-a
+img adalah direktori gambar
