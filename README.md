@@ -1,7 +1,9 @@
+#MUNIRUDIN
 <!--IMAGE-->
 ![2](https://github.com/munirudin26/munirudin26/blob/main/img/archlinux-logo-dark-90dpi.ebdee92a15b3.png)
 ![]()
 
+skill
 <!--ICON-->
 <p align="center">
   <a href="https://skillicons.dev">
