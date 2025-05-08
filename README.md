@@ -5,6 +5,7 @@
 <!--ICON-->
 <p align="left">
   <a href="https://skillicons.dev">
-    <img src="https://skillicons.dev/icons?i=debian,cpp,mysql,nodejs,netlify,vscode" />
+    <img src="https://skillicons.dev/icons?i=debian,cpp,mysql,nodejs,vscode,vercel,react" />
   </a>
 </p>
+https://youtu.be/0oExHtGi8dg?si=XS_a-JkEEg8klKSlhttps://youtu.be/OQspok-swzY?si=HzGUc-M4mmRi7NmG
