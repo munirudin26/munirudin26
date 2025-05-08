@@ -6,6 +6,6 @@ skill
 <!--ICON-->
 <p align="center">
   <a href="https://skillicons.dev">
-    <img src="https://skillicons.dev/icons?i=debian,cpp,mysql,nodejs,netlify" />
+    <img src="https://skillicons.dev/icons?i=debian,cpp,mysql,nodejs,netlify,vscode" />
   </a>
 </p>
