@@ -1,1 +1,0 @@
-img adalah direktori gambar
