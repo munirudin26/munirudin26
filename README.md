@@ -10,6 +10,6 @@
 
 <p align="left">
   <a href="https://skillicons.dev">
-    <img src="https://skillicons.dev/icons?i=php,vscode,.net,java," />
+    <img src="https://skillicons.dev/icons?i=php,vscode,dotnet,java," />
   </a>
 </p>
