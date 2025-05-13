@@ -4,12 +4,12 @@
 
 <p align="left">
   <a href="https://skillicons.dev">
-    <img src="https://skillicons.dev/icons?i=cpp,mysql,nodejs,js,npm," />
+    <img src="https://skillicons.dev/icons?i=cpp,nodejs,js,mysql,npm," />
   </a>
 </p>
 
 <p align="left">
   <a href="https://skillicons.dev">
-    <img src="https://skillicons.dev/icons?i=php,vscode,dotnet,java," />
+    <img src="https://skillicons.dev/icons?i=vscode,dotnet" />
   </a>
 </p>
