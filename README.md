@@ -1,7 +1,7 @@
 <!--IMAGE-->
 ![header](https://github.com/munirudin26/munirudin26/blob/main/img%2Fheader.png)
 <!--ICON-->
-# OS
+## OS
 [![My Skills](https://skillicons.dev/icons?i=linux,debian)](https://skillicons.dev)
 # Bahasa Pemrograman
 [![My Skills](https://skillicons.dev/icons?i=cpp,js,)](https://skillicons.dev)
