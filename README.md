@@ -8,4 +8,4 @@
   </a>
 </p>
 
-[![My Skills](https://skillicons.dev/icons?i=vscode,prittier,coderuner,prisma,)](https://skillicons.dev)
+[![My Skills](https://skillicons.dev/icons?i=vscode,prisma,)](https://skillicons.dev)
