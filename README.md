@@ -4,7 +4,7 @@
 
 <p align="left">
   <a href="https://skillicons.dev">
-    <img src="https://skillicons.dev/icons?i=cpp,nodejs,js,mysql,maria,npm," />
+    <img src="https://skillicons.dev/icons?i=cpp,nodejs,js,mysql,npm," />
   </a>
 </p>
 
@@ -13,3 +13,4 @@
     <img src="https://skillicons.dev/icons?i=vscode,dotnet" />
   </a>
 </p>
+[![My Skills](https://skillicons.dev/icons?i=cpp,nodejs,js,mysql,npm
