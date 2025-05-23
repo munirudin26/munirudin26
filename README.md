@@ -11,6 +11,4 @@
 
 [![My Skills](https://skillicons.dev/icons?i=mysql)](https://skillicons.dev)
 
-[![My Skills](https://skillicons.dev/icons?i=css)](https://skillicons.dev)
-
 [![My Skills](https://skillicons.dev/icons?i=netlify,vercel)](https://skillicons.dev)
