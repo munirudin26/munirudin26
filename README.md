@@ -3,11 +3,11 @@
 <!--ICON-->
 
 ## OS
-[![My Skills](https://skillicons.dev/icons?i=linux,debian)](https://skillicons.dev)
+[![My Skills](https://skillicons.dev/icons?i=debian)](https://skillicons.dev)
 #### Framework
 [![My Skills](https://skillicons.dev/icons?i=nodejs)](https://skillicons.dev)
 #### Program
-[![My Skills](https://skillicons.dev/icons?i=cpp,js,)](https://skillicons.dev)
+[![My Skills](https://skillicons.dev/icons?i=cpp,js,java,)](https://skillicons.dev)
 #### Package
 [![My Skills](https://skillicons.dev/icons?i=npm)](https://skillicons.dev)
 #### Database
