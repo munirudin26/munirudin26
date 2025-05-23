@@ -5,7 +5,7 @@
 
 [![My Skills](https://skillicons.dev/icons?i=nodejs)](https://skillicons.dev)
 
-[![My Skills](https://skillicons.dev/icons?i=cpp,js,java)](https://skillicons.dev)
+[![My Skills](https://skillicons.dev/icons?i=cpp,js,java,react)](https://skillicons.dev)
 
 [![My Skills](https://skillicons.dev/icons?i=npm)](https://skillicons.dev)
 
@@ -13,4 +13,4 @@
 
 [![My Skills](https://skillicons.dev/icons?i=css)](https://skillicons.dev)
 
-[![My Skills](https://skillicons.dev/icons?i=netlify)](https://skillicons.dev)
+[![My Skills](https://skillicons.dev/icons?i=netlify,vercel)](https://skillicons.dev)
