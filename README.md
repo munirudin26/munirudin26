@@ -4,8 +4,6 @@
 
 ## OS
 [![My Skills](https://skillicons.dev/icons?i=linux,debian)](https://skillicons.dev)
-#### Editor
-[![](https://skillicons.dev/icons?i=)](https://skillicons.dev)
 #### Framework
 [![My Skills](https://skillicons.dev/icons?i=nodejs)](https://skillicons.dev)
 #### Program
