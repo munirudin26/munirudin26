@@ -1,6 +1,6 @@
 
 <!--IMAGE-->
-![header](https://www.liputan6.com/hot/read/4715780/goblin-adalah-makhluk-mitologi-beda-versi-eropa-dan-korea?page=3.png)
+![header](https://cdn1-production-images-kly.akamaized.net/tI_hVLOWPGPSTcHc6UZvu3ldjIE=/640x360/smart/filters:quality(75):strip_icc():format(webp)/kly-media-production/medias/3148968/original/086226900_1591781805-Goblin.jpg)
 <!--ICON-->
 [![My Skills](https://skillicons.dev/icons?i=debian)](https://skillicons.dev)
 
