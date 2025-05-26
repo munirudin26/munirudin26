@@ -41,3 +41,14 @@ Jika Anda mendapatkan kode ini dari repositori Git, mulailah dengan mengkloningn
 ```bash
 git clone <url_repositori_anda>
 cd <nama_folder_aplikasi>
+```
+
+Jika Anda membuat dari awal, pastikan Anda berada di direktori proyek Anda.
+
+### 2. Instal Dependensi Node.js
+
+Navigasikan ke direktori proyek Anda di terminal dan instal semua dependensi yang diperlukan:
+
+```bash
+npm install express ejs mysql2
+```
