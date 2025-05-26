@@ -172,6 +172,7 @@ Pastikan file EJS Anda memiliki konten yang sesuai. Berikut adalah contoh singka
 
 `views/contact.ejs`
 ```HTML
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
