@@ -38,7 +38,7 @@ Ikuti langkah-langkah di bawah ini secara berurutan.
 
 Jika Anda mendapatkan kode ini dari repositori Git, mulailah dengan mengkloningnya:
 
-```bash
+```
 git clone <url_repositori_anda>
 cd <nama_folder_aplikasi>
 ```
@@ -49,7 +49,7 @@ Jika Anda membuat dari awal, pastikan Anda berada di direktori proyek Anda.
 
 Navigasikan ke direktori proyek Anda di terminal dan instal semua dependensi yang diperlukan:
 
-```bash
+```
 npm install express ejs mysql2
 ```
 
@@ -59,7 +59,7 @@ Pastikan MySQL atau MariaDB Server Anda sudah terinstal dan berjalan.
 
 a. Instalasi (Contoh untuk Debian 12)
 
-```bash
+```
 sudo apt update
 sudo apt install mysql-server # Atau mariadb-server
 sudo systemctl start mysql    # Atau systemctl start mariadb
@@ -80,7 +80,7 @@ c. Buat Database dan Tabel Kontak
 
 Masuk ke MySQL/MariaDB Monitor sebagai `root` dengan kata sandi yang telah Anda atur:
 
-```bash
+```
 mysql -u root -p
 ```
 
@@ -88,7 +88,7 @@ mysql -u root -p
 
 Setelah masuk, jalankan perintah SQL berikut untuk membuat database contact_app dan tabel contacts:
 
-```bash
+```
 CREATE DATABASE contact_app;
 USE contact_app;
 CREATE TABLE contacts (
@@ -103,7 +103,7 @@ exit;
 d. Buka Port MySQL/MariaDB di Firewall (Jika Menggunakan UFW)
 Jika Anda menggunakan UFW (Uncomplicated Firewall) di Debian, Anda perlu membuka port 3306.
 
-```bash
+```
 sudo ufw allow 3306/tcp
 sudo ufw reload
 ```
@@ -112,7 +112,7 @@ sudo ufw reload
 
 Buka file `app.js` Anda dan pastikan konfigurasi koneksi database Anda benar.
 
-```bash
+```
 // app.js
 
 // ... (bagian atas file)
@@ -171,8 +171,7 @@ Contoh Isi File EJS (Views)
 Pastikan file EJS Anda memiliki konten yang sesuai. Berikut adalah contoh singkat untuk `contact.ejs` dan `detail.ejs` yang penting untuk integrasi database.
 
 `views/contact.ejs`
-```HTML
-
+```
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -213,3 +212,70 @@ Pastikan file EJS Anda memiliki konten yang sesuai. Berikut adalah contoh singka
 </html>
 ```
 
+`views/detail.ejs`
+
+```
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> - <%= contact.nama %></title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <h1>Detail Kontak: <%= contact.nama %></h1>
+    <p><strong>Nama:</strong> <%= contact.nama %></p>
+    <p><strong>Email:</strong> <%= contact.email %></p>
+    <p><strong>Telepon:</strong> <%= contact.telepon %></p>
+
+    <form action="/contact/delete" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus kontak ini?');" style="display: inline-block;">
+        <input type="hidden" name="id" value="<%= contact.id %>">
+        <button type="submit" style="background-color: red; color: white; padding: 8px 12px; border: none; cursor: pointer; margin-right: 10px;">Hapus Kontak</button>
+    </form>
+    <a href="/contact/edit/<%= contact.id %>" style="background-color: green; color: white; padding: 8px 12px; text-decoration: none;">Edit Kontak</a>
+    <br><br>
+    <a href="/contact">Kembali ke Daftar Kontak</a>
+</body>
+</html>
+```
+
+Pastikan juga Anda memiliki `add-contact.ejs`, `edit-contact.ejs`, `index.ejs`, `about.ejs`, dan `404.ejs` dengan konten yang sesuai dari langkah-langkah sebelumnya.
+
+### 6. Jalankan Aplikasi
+
+Setelah semua konfigurasi dan file siap, jalankan aplikasi Node.js Anda dari terminal di direktori proyek:
+
+```
+node app.js
+```
+
+Anda akan melihat pesan seperti:
+
+``
+Terkoneksi ke MySQL!
+Express app berjalan di http://localhost:8080/
+``
+
+### 7. Akses Aplikasi
+
+Buka browser web Anda dan navigasikan ke:
+
+``
+http://localhost:8080/
+``
+
+Dari sana, Anda bisa menavigasi ke "Lihat Daftar Kontak" dan mulai menguji fungsionalitas CRUD.
+
+### Pengujian Fungsionalitas CRUD
+
+1. Tambah Kontak: Klik "Tambah Kontak Baru", isi formulir, dan submit. Pastikan kontak baru muncul di daftar.
+
+2. Lihat Detail: Klik nama kontak di daftar untuk melihat detail lengkapnya.
+
+3. Edit Kontak: Dari halaman detail, klik "Edit Kontak", ubah informasi, dan simpan. Pastikan perubahan tersimpan.
+
+4. Hapus Kontak: Dari halaman detail, klik "Hapus Kontak" dan konfirmasi. Pastikan kontak terhapus dari daftar.
+
+5. Uji Persistensi: Tambahkan/ubah/hapus beberapa kontak, lalu hentikan server `(Ctrl + C)`, dan jalankan lagi `(node app.js)`. Periksa
+`http://localhost:8080/contact` untuk memastikan data tetap ada di database.
