@@ -74,7 +74,7 @@ Capaian Utama Hingga Saat Ini:
 
 # 3. Struktur Folder Proyek
 
-``
+```
 wms-app/
 ├── node_modules/           # Dependencies
 ├── src/
@@ -115,7 +115,7 @@ wms-app/
 ├── package.json
 ├── package-lock.json
 └── hash_password.js        # Utilitas sementara untuk generate hash password
-``
+```
 
 # 4. Fitur Utama yang Telah Diimplementasikan
  
