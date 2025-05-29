@@ -4,4 +4,4 @@
 <!--ICON-->
 [![My Skills](https://skillicons.dev/icons?i=c++,debian,mysql,nodejs,js,npm,css,html,tailwind,netlify)](https://skillicons.dev)
 
-[![My Skills](https://skillicons.dev/icons?i=cpp,.net.java)](https://skillicons.dev)
+[![My Skills](https://skillicons.dev/icons?i=cpp,net,java)](https://skillicons.dev)
