@@ -268,6 +268,208 @@ wms-app/
       Ubah Password Admin: http://localhost:3000/admin/change-password
 
 
+# Dokumentasi code
+`wms-app/hash_password.js`
+```
+// hash_password.js
+const bcrypt = require('bcryptjs');
+
+async function hashPassword() {
+    const passwordToHash = 'admin352'; // Password yang ingin di-hash
+    const saltRounds = 10; // Kekuatan hashing (10 adalah nilai yang baik)
+
+    try {
+        const hashedPassword = await bcrypt.hash(passwordToHash, saltRounds);
+        console.log('Hashed Password untuk "admin123":', hashedPassword);
+    } catch (error) {
+        console.error('Error hashing password:', error);
+    }
+}
+```
+
+`wms-app/package.json`
+
+`wms-app/package-lock.json`
+
+`wms-app/node_modules/`
+
+`wms/src/app.js`
+```
+// src/app.js
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const { connectDB } = require('./config/database');
+const authRoutes = require('./routes/authRoutes');
+const adminRoutes = require('./routes/adminRoutes');
+const { authenticateToken, authorizeRoles } = require('./middleware/authMiddleware');
+require('dotenv').config();
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+// Menghubungkan ke database saat aplikasi dimulai
+connectDB();
+
+// Middleware dasar Express
+app.use(express.urlencoded({ extended: true })); // Untuk parsing data dari form HTML
+app.use(express.json()); // Untuk parsing body JSON
+app.use(cookieParser()); // Untuk mem-parsing dan membaca cookies
+
+// Mengatur EJS sebagai templating engine
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, '../views')); // Menentukan lokasi folder views
+
+// Mengatur folder 'public' untuk file statis (CSS, JS frontend, gambar)
+app.use(express.static(path.join(__dirname, '../public')));
+
+// Menggunakan route autentikasi (publik, tidak memerlukan login)
+app.use('/', authRoutes);
+//app.use('/', adminRoutes); // Tambahkan ini
+app.use('/admin', adminRoutes); // <- Saran saya menggunakan prefix
+// Route utama '/' akan dicek autentikasi sebelum diarahkan ke dashboard
+app.get('/', authenticateToken, (req, res) => {
+    // Redirect ke dashboard yang sesuai dengan role user setelah login
+    switch (req.user.role) {
+        case 'admin':
+            return res.redirect('/dashboard/admin');
+        case 'ppic':
+            return res.redirect('/dashboard/ppic');
+        case 'packing':
+            return res.redirect('/dashboard/packing');
+        case 'mixing':
+            return res.redirect('/dashboard/mixing');
+        case 'milling':
+            return res.redirect('/dashboard/milling');
+        case 'qc':
+            return res.redirect('/dashboard/qc');
+        case 'gudang':
+            return res.redirect('/dashboard/gudang');
+        default:
+            // Jika role tidak dikenali, bisa diarahkan ke halaman default atau error
+            return res.render('dashboard', { user: req.user, message: 'Selamat datang di WMS!' 
+});
+    }
+});
+
+// Contoh Route Dashboard yang Dilindungi per Role
+// Setiap role memiliki dashboardnya sendiri yang hanya bisa diakses oleh role tersebut (dan ad
+min)
+app.get('/dashboard/admin', authenticateToken, authorizeRoles('admin'), (req, res) => {
+    res.render('dashboard/admin', { user: req.user });
+});
+
+app.get('/dashboard/ppic', authenticateToken, authorizeRoles('admin', 'ppic'), (req, res) => {
+    res.render('dashboard/ppic', { user: req.user });
+});
+
+app.get('/dashboard/packing', authenticateToken, authorizeRoles('admin', 'packing'), (req, res)
+ => {
+    res.render('dashboard/packing', { user: req.user });
+});
+
+app.get('/dashboard/mixing', authenticateToken, authorizeRoles('admin', 'mixing'), (req, res) =
+> {
+    res.render('dashboard/mixing', { user: req.user });
+});
+
+app.get('/dashboard/milling', authenticateToken, authorizeRoles('admin', 'milling'), (req, res)
+ => {
+    res.render('dashboard/milling', { user: req.user });
+});
+
+app.get('/dashboard/qc', authenticateToken, authorizeRoles('admin', 'qc'), (req, res) => {
+    res.render('dashboard/qc', { user: req.user });
+});
+
+app.get('/dashboard/gudang', authenticateToken, authorizeRoles('admin', 'gudang'), (req, res) =
+> {
+    res.render('dashboard/gudang', { user: req.user });
+});
+
+// Jalankan server
+app.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
+    // --- TAMBAHKAN BARIS INI UNTUK MENAMPILKAN URL PENTING ---
+    console.log('\n--- URL Penting (Akses setelah Login sebagai Admin) ---');
+    console.log(`1. Buat Pengguna Baru: http://localhost:${PORT}/admin/users/create`);
+    console.log(`2. Lihat Daftar Pengguna: http://localhost:${PORT}/admin/users`);
+    console.log(`3. Ubah Password Admin: http://localhost:${PORT}/admin/change-password`);
+    console.log('----------------------------------------------------');
+    // --- AKHIR PENAMBAHAN ---
+});
+```
+
+`wms-app/src/config/database.js`
+```
+// src/config/database.js
+const mysql = require('mysql2/promise');
+require('dotenv').config(); // Memuat variabel lingkungan dari .env
+
+const pool = mysql.createPool({
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0
+});
+
+async function connectDB() {
+    try {
+        const connection = await pool.getConnection();
+        console.log('Connected to MySQL database!');
+        connection.release(); // Mengembalikan koneksi ke pool
+
+        // Opsional: Buat database dan tabel users jika belum ada
+        // Biasanya ini hanya untuk pengembangan awal, di produksi lebih baik melalui migrasi
+        await pool.query(`CREATE DATABASE IF NOT EXISTS ${process.env.DB_NAME}`);
+        console.log(`Database '${process.env.DB_NAME}' checked/created.`);
+        await createUsersTable(); // Panggil fungsi untuk membuat tabel users
+
+    } catch (err) {
+        console.error('Error connecting to database:', err.message);
+        process.exit(1); // Keluar aplikasi jika koneksi database gagal
+    }
+}
+
+async function createUsersTable() {
+    const createUserTableQuery = `
+    CREATE TABLE IF NOT EXISTS users (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        username VARCHAR(50) UNIQUE NOT NULL,
+        password_hash VARCHAR(255) NOT NULL,
+        full_name VARCHAR(100) NOT NULL,
+        email VARCHAR(100) UNIQUE,
+        role ENUM('admin', 'ppic', 'packing', 'mixing', 'milling', 'qc', 'gudang') NOT NULL,
+        is_active BOOLEAN DEFAULT TRUE,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    );
+    `;
+
+    try {
+        await pool.query(createUserTableQuery);
+        console.log('Table `users` checked/created by app.');
+    } catch (err) {
+        console.error('Error creating `users` table:', err.message);
+    }
+}
+
+module.exports = {
+    pool,
+    connectDB
+};
+```
+
+`wms-app/src/controllers/authController.js`
+```
+
+```
+
+
+
 
 
 
