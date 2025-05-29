@@ -275,7 +275,7 @@ wms-app/
 const bcrypt = require('bcryptjs');
 
 async function hashPassword() {
-    const passwordToHash = 'admin352'; // Password yang ingin di-hash
+    const passwordToHash = 'admin123'; // Password yang ingin di-hash
     const saltRounds = 10; // Kekuatan hashing (10 adalah nilai yang baik)
 
     try {
