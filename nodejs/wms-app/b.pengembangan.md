@@ -1706,4 +1706,414 @@ ghapus pengguna <%= user.username %>?');">Delete</button>
 </html>
 ```
 
+`wms-app/views/dashboard/admin.ejs`
+```
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Admin</title>
+</head>
+<body>
+    <h1>Selamat Datang, Admin <%= user.fullName || user.username %>!</h1>
+    <p>Anda login sebagai: **<%= user.role %>**</p>
+    <a href="/logout">Logout</a>
+    <p>Ini adalah halaman dashboard untuk Administrator. Anda memiliki akses penuh ke semua fitur.</p>
+</body>
+</html>
+```
 
+`wms-app/views/dashboard/gudang.ejs`
+```
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard PPIC - WMS App</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h1 { color: #333; }
+        .user-info { color: #555; }
+        .logout-link { display: inline-block; margin-top: 15px; padding: 8px 15px; background-color: #f44336; color: white; text-decoration: none; border-radius: 5px; }
+        .logout-link:hover { background-color: #d32f2f; }
+    </style>
+</head>
+<body>
+    <h1>Selamat Datang, Dashboard gudang</h1>
+    <% if (user) { %>
+       <p class="user-info">Anda login sebagai: <strong><%= user.full_name %> (<%= user.role %>)</strong></p>
+    <% } %>
+    <p>Ini adalah halaman dashboard untuk role gudang. Anda akan menemukan fitur-fitur spesifik PPIC di sini.</p>
+
+    <a href="/logout" class="logout-link">Logout</a>
+</body>
+</html>
+```
+
+`wms-app/views/dashboard/milling.ejs`
+```
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard PPIC - WMS App</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h1 { color: #333; }
+        .user-info { color: #555; }
+        .logout-link { display: inline-block; margin-top: 15px; padding: 8px 15px; background-color: #f44336; color: white; text-decoration: none; border-radius: 5px; }
+        .logout-link:hover { background-color: #d32f2f; }
+    </style>
+</head>
+<body>
+    <h1>Selamat Datang, Dashboard milling</h1>
+    <% if (user) { %>
+       <p class="user-info">Anda login sebagai: <strong><%= user.full_name %> (<%= user.role %>)</strong></p>
+    <% } %>
+    <p>Ini adalah halaman dashboard untuk role milling. Anda akan menemukan fitur-fitur spesifik PPIC di sini.</p>
+
+    <a href="/logout" class="logout-link">Logout</a>
+</body>
+</html>
+```
+
+`wms-app/views/dashboard/mixing.ejs`
+```
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard PPIC - WMS App</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h1 { color: #333; }
+        .user-info { color: #555; }
+        .logout-link { display: inline-block; margin-top: 15px; padding: 8px 15px; background-color: #f44336; color: white; text-decoration: none; border-radius: 5px; }
+        .logout-link:hover { background-color: #d32f2f; }
+    </style>
+</head>
+<body>
+    <h1>Selamat Datang, Dashboard PPIC!</h1>
+    <% if (user) { %>
+       <p class="user-info">Anda login sebagai: <strong><%= user.full_name %> (<%= user.role %>)</strong></p>
+    <% } %>
+    <p>Ini adalah halaman dashboard untuk role mixing. Anda akan menemukan fitur-fitur spesifik PPIC di sini.</p>
+
+    <a href="/logout" class="logout-link">Logout</a>
+</body>
+</html>
+```
+
+`wms-app/views/dashboard/packing.ejs`
+```
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard packing - WMS App</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h1 { color: #333; }
+        .user-info { color: #555; }
+        .logout-link { display: inline-block; margin-top: 15px; padding: 8px 15px; background-color: #f44336; color: white; text-decoration: none; border-radius: 5px; }
+        .logout-link:hover { background-color: #d32f2f; }
+    </style>
+</head>
+<body>
+    <h1>Selamat Datang, Dashboard packing</h1>
+    <% if (user) { %>
+       <p class="user-info">Anda login sebagai: <strong><%= user.full_name %> (<%= user.role %>)</strong></p>
+   <% } %>
+    <p>Ini adalah halaman dashboard untuk role packing. Anda akan menemukan fitur-fitur spesifik PPIC di sini.</p>
+
+    <a href="/logout" class="logout-link">Logout</a>
+</body>
+</html>
+```
+
+`wms-app/views/dashboard/ppic.ejs`
+```
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard PPIC - WMS App</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h1 { color: #333; }
+        .user-info { color: #555; }
+        .logout-link { display: inline-block; margin-top: 15px; padding: 8px 15px; background-color: #f44336; color: white; text-decoration: none; border-radius: 5px; }
+        .logout-link:hover { background-color: #d32f2f; }
+    </style>
+</head>
+<body>
+    <h1>Selamat Datang, Dashboard PPIC!</h1>
+    <% if (user) { %>
+       <p class="user-info">Anda login sebagai: <strong><%= user.full_name %> (<%= user.role %>)</strong></p>
+    <% } %>
+    <p>Ini adalah halaman dashboard untuk role PPIC. Anda akan menemukan fitur-fitur spesifik PPIC di sini.</p>
+
+    <a href="/logout" class="logout-link">Logout</a>
+</body>
+</html>
+```
+
+`wms-app/views/dashboard/qc.ejs`
+```
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard PPIC - WMS App</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h1 { color: #333; }
+        .user-info { color: #555; }
+        .logout-link { display: inline-block; margin-top: 15px; padding: 8px 15px; background-color: #f44336; color: white; text-decoration: none; border-radius: 5px; }
+        .logout-link:hover { background-color: #d32f2f; }
+    </style>
+</head>
+<body>
+    <h1>Selamat Datang, Dashboard qc</h1>
+    <% if (user) { %>
+       <p class="user-info">Anda login sebagai: <strong><%= user.full_name %> (<%= user.role %>)</strong></p>
+    <% } %>
+    <p>Ini adalah halaman dashboard untuk role qc. Anda akan menemukan fitur-fitur spesifik PPIC di sini.</p>
+
+    <a href="/logout" class="logout-link">Logout</a>
+</body>
+</html>
+```
+
+`wms-app/views/auth/forgot-password.ejs`
+```
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lupa Password - WMS App</title>
+</head>
+<body>
+    <div class="login-container">
+        <h2>Lupa Password</h2>
+        <% if (error) { %>
+            <p class="error-message"><%= error %></p>
+        <% } %>
+        <% if (success) { %>
+            <p class="success-message"><%= success %></p>
+        <% } %>
+        <form action="/forgot-password" method="POST">
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+
+            <button type="submit">Kirim Link Reset</button>
+        </form>
+        <p><a href="/login">Kembali ke login</a></p>
+    </div>
+</body>
+</html>
+```
+
+`wms-app/views/auth/login.ejs`
+```
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login WMS App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .login-container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            text-align: center;
+        }
+        .login-container h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .login-container label {
+            display: block;
+            text-align: left;
+            margin-bottom: 5px;
+            color: #555;
+        }
+        .login-container input[type="text"],
+        .login-container input[type="password"] {
+            width: calc(100% - 20px); /* Kurangi padding dari width */
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .login-container button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .login-container button:hover {
+            background-color: #0056b3;
+        }
+        .error-message {
+            color: red;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h2>Login WMS</h2>
+        <% if (error) { %>
+            <p class="error-message"><%= error %></p>
+        <% } %>
+        <form action="/login" method="POST">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+
+            <button type="submit">Login</button>
+        </form>
+    </div>
+</body>
+</html>
+```
+
+`wms-app/views/auth/register.ejs`
+```
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - WMS App</title>
+    <style>
+        /* CSS styling mirip dengan login */
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h2>Registrasi Akun Baru</h2>
+        <% if (error) { %>
+            <p class="error-message"><%= error %></p>
+        <% } %>
+        <form action="/register" method="POST">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+
+            <label for="full_name">Nama Lengkap:</label>
+            <input type="text" id="full_name" name="full_name" required>
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+
+            <label for="confirm_password">Konfirmasi Password:</label>
+            <input type="password" id="confirm_password" name="confirm_password" required>
+
+            <button type="submit">Daftar</button>
+        </form>
+        <p>Sudah punya akun? <a href="/login">Login disini</a></p>
+    </div>
+</body>
+</html>
+```
+
+`wms-app/views/auth/register-success.ejs`
+```
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrasi Berhasil - WMS App</title>
+</head>
+<body>
+    <h1>Registrasi Berhasil!</h1>
+    <p>Email verifikasi telah dikirim ke <strong><%= email %></strong>. Silakan cek email Anda untuk verifikasi akun.</p>
+    <p><a href="/login">Kembali ke halaman login</a></p>
+</body>
+</html>
+```
+
+`wms-app/views/auth/reset-password.ejs`
+```
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reset Password - WMS App</title>
+</head>
+<body>
+    <div class="login-container">
+        <h2>Reset Password</h2>
+        <% if (error) { %>
+            <p class="error-message"><%= error %></p>
+        <% } %>
+        <% if (token) { %>
+            <form action="/reset-password" method="POST">
+                <input type="hidden" name="token" value="<%= token %>">
+                
+                <label for="password">Password Baru:</label>
+                <input type="password" id="password" name="password" required>
+
+                <label for="confirm_password">Konfirmasi Password Baru:</label>
+                <input type="password" id="confirm_password" name="confirm_password" required>
+
+                <button type="submit">Reset Password</button>
+            </form>
+        <% } else { %>
+            <p>Link reset password tidak valid atau sudah kadaluarsa.</p>
+            <p><a href="/forgot-password">Minta link reset password baru</a></p>
+        <% } %>
+    </div>
+</body>
+</html>
+```
+
+`wms-app/views/auth/reset-password-success.ejs`
+```
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Password Berhasil Direset - WMS App</title>
+</head>
+<body>
+    <h1>Password Berhasil Direset!</h1>
+    <p>Password Anda telah berhasil diubah. Silakan login dengan password baru Anda.</p>
+    <p><a href="/login">Login sekarang</a></p>
+</body>
+</html>
+```
