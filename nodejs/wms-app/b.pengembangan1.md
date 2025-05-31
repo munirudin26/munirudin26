@@ -730,7 +730,41 @@ Sekarang, Anda seharusnya bisa:
     Klik "Tambah Produk Baru" untuk membuka form dan mencoba menambahkan produk.
 
     Mencoba mengedit atau menghapus setelah ada produk.
+### buka `src/app.js`
+Cari bagian ini di akhir file app.js Anda:
+```
+// Jalankan server
+app.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
+    // --- TAMBAHKAN BARIS INI UNTUK MENAMPILKAN URL PENTING ---
+    console.log('\n--- URL Penting (Akses setelah Login sebagai Admin) ---');
+    console.log(`1. Buat Pengguna Baru: http://localhost:${PORT}/admin/users/create`);
+    console.log(`2. Lihat Daftar Pengguna: http://localhost:${PORT}/admin/users`);
+    console.log(`3. Ubah Password Admin: http://localhost:${PORT}/admin/change-password`);
+    console.log('----------------------------------------------------');
+    // --- AKHIR PENAMBAHAN ---
+});
+```
 
+Kemudian, ganti seluruh blok console.log tersebut dengan versi yang diperbarui ini:
+```
+// Jalankan server
+app.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
+    console.log('\n--- URL Penting ---');
+    console.log(`1. Halaman Login: http://localhost:${PORT}/login`);
+    console.log(`2. Dashboard Admin (Akses setelah Login): http://localhost:${PORT}/dashboard/admin`);
+    console.log('\n   --- Manajemen Pengguna (Akses setelah Login sebagai Admin) ---');
+    console.log(`   - Buat Pengguna Baru: http://localhost:${PORT}/admin/users/create`);
+    console.log(`   - Lihat Daftar Pengguna: http://localhost:${PORT}/admin/users`);
+    console.log(`   - Ubah Password Admin: http://localhost:${PORT}/admin/change-password`);
+
+    console.log('\n   --- Manajemen Produk (BARU - Akses setelah Login sebagai Admin) ---');
+    console.log(`   - Buat Produk Baru: http://localhost:${PORT}/admin/products/create`);
+    console.log(`   - Lihat Daftar Produk: http://localhost:${PORT}/admin/products`);
+    console.log('--------------------');
+});
+```
 
 ### B. Modul Proses Operasional (Workflow Automation)
 
