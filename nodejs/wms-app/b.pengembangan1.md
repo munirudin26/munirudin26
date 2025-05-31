@@ -3403,35 +3403,44 @@ Receiving Process (receiveItem): Ini adalah inti dari modul penerimaan:
 
 
 ### `wms-app/src/routes/receivingRoutes.js`
-```// src/routes/receivingRoutes.js
+```
 const express = require('express');
 const router = express.Router();
 const receivingController = require('../controllers/receivingController');
-const authMiddleware = require('../middleware/authMiddleware'); // Pastikan path ini benar
+const { authenticateToken, authorizeRoles } = require('../middleware/authMiddleware'); // Import yang sudah benar
 
 // Middleware untuk otorisasi (misalnya, hanya admin atau ppic yang bisa akses)
-// Sesuaikan peran yang diizinkan sesuai kebutuhan Anda
-const authorize = (roles) => authMiddleware.authorize(roles);
+// Router.use ini akan diterapkan ke SEMUA rute di bawahnya.
+// Jadi, secara default, semua rute di file ini akan memerlukan peran 'admin' ATAU 'gudang'.
+// Jika Anda ingin rute spesifik memiliki peran yang berbeda/lebih longgar/lebih ketat,
+// Anda bisa menambahkan authorizeRoles lagi di rute tersebut.
+router.use(authenticateToken); // authenticateToken selalu berjalan
+
+// Menggunakan authorizeRoles langsung sebagai middleware
+// Penting: authorizeRoles mengembalikan middleware, jadi langsung panggil di rute
+router.use(authorizeRoles('admin', 'gudang', 'ppic', 'qc')); // Contoh: Semua peran ini bisa akses routes di bawahnya
 
 // --- Purchase Order (PO) Routes ---
 
 // Menampilkan daftar Purchase Orders
-router.get('/purchase-orders', authorize(['admin', 'ppic', 'gudang']), receivingController.listPurchaseOrders);
+// Jika Anda ingin peran yang lebih spesifik untuk rute ini, tambahkan lagi authorizeRoles
+router.get('/purchase-orders', receivingController.listPurchaseOrders); // Roles sudah ditangani di router.use
 
 // Menampilkan form untuk membuat PO baru
-router.get('/purchase-orders/add', authorize(['admin', 'ppic']), receivingController.showAddPurchaseOrderForm);
+// Overwrite default roles jika diperlukan
+router.get('/purchase-orders/add', authorizeRoles('admin', 'ppic'), receivingController.showAddPurchaseOrderForm);
 
 // Memproses pembuatan PO baru
-router.post('/purchase-orders/add', authorize(['admin', 'ppic']), receivingController.addPurchaseOrder);
+router.post('/purchase-orders/add', authorizeRoles('admin', 'ppic'), receivingController.addPurchaseOrder);
 
 // Menampilkan detail PO dan opsi untuk menerima barang
-router.get('/purchase-orders/:id/detail', authorize(['admin', 'ppic', 'gudang', 'qc']), receivingController.showPurchaseOrderDetail);
+router.get('/purchase-orders/:id/detail', receivingController.showPurchaseOrderDetail); // Roles sudah ditangani di router.use
 
 // --- Receiving Process Routes ---
 
 // Memproses pencatatan penerimaan barang untuk item PO tertentu
 // URL: /admin/receiving/purchase-orders/:poId/items/:poItemId/receive
-router.post('/purchase-orders/:poId/items/:poItemId/receive', authorize(['admin', 'gudang', 'qc']), receivingController.receiveItem);
+router.post('/purchase-orders/:poId/items/:poItemId/receive', authorizeRoles('admin', 'gudang', 'qc'), receivingController.receiveItem);
 
 // TODO: Tambahkan rute untuk edit/delete PO atau item PO jika diperlukan nanti
 
@@ -5260,6 +5269,1294 @@ router.post('/edit/:id', authorizeRoles('admin', 'gudang'), inventoryStockContro
 router.post('/delete/:id', authorizeRoles('admin', 'gudang'), inventoryStockController.deleteStock); // Disesuaikan dengan controller
 
 module.exports = router;
+```
+
+# mengatasi eror url
+### Buka file `src/controllers/inventoryStockController.js`
+
+Cari baris ini (sekitar baris 215, nomor baris mungkin sedikit bergeser):
+```
+const stocks = await InventoryStock.getAllWithProductAndLocation();
+```
+
+Ubah menjadi:
+```
+const inventoryStocks = await InventoryStock.getAll();
+```
+install express-ejs-layouts
+```
+npm install express-ejs-layouts
+```
+
+buat file `views/layouts/admin-layout.ejs`
+```
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= typeof title !== 'undefined' ? title : 'WMS App' %></title>
+    <link href="/css/sb-admin-2.min.css" rel="stylesheet">
+    <link href="/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+</head>
+<body id="page-top">
+    <div id="wrapper">
+
+        <%- include('../partials/sidebar') %>
+        <div id="content-wrapper" class="d-flex flex-column">
+
+            <div id="content">
+
+                <%- include('../partials/topbar') %>
+                <div class="container-fluid">
+                    <% if (message && message.length > 0) { %>
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <%= message %>
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    <% } %>
+                    <% if (error && error.length > 0) { %>
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <%= error %>
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    <% } %>
+
+                    <%- body %>
+
+                </div>
+                </div>
+            <%- include('../partials/footer') %>
+            </div>
+        </div>
+    <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fas fa-angle-up"></i>
+    </a>
+
+    <%- include('../partials/logout-modal') %>
+
+    <script src="/vendor/jquery/jquery.min.js"></script>
+    <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <script src="/vendor/jquery-easing/jquery.easing.min.js"></script>
+
+    <script src="/js/sb-admin-2.min.js"></script>
+
+    </body>
+</html>
+```
+
+revisi file `src/app.js`
+```
+// src/app.js
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const session = require('express-session');
+const flash = require('connect-flash');
+const expressLayouts = require('express-ejs-layouts'); // Pastikan ini diimpor!
+
+const { connectDB } = require('./config/database');
+const passport = require('./config/passport'); // Pastikan path ini benar
+const { authenticateToken, authorizeRoles } = require('./middleware/authMiddleware');
+require('dotenv').config();
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+// Import routes
+const authRoutes = require('./routes/authRoutes');
+const adminRoutes = require('./routes/adminRoutes');
+const userRoutes = require('./routes/userRoutes');
+const productRoutes = require('./routes/productRoutes');
+const locationRoutes = require('./routes/locationRoutes');
+const inventoryStockRoutes = require('./routes/inventoryStockRoutes');
+const receivingRoutes = require('./routes/receivingRoutes');
+
+// Menghubungkan ke database saat aplikasi dimulai
+connectDB();
+
+// Middleware dasar Express
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(cookieParser());
+
+// Konfigurasi Session
+app.use(session({
+    secret: process.env.SESSION_SECRET || 'supersecretkey',
+    resave: false,
+    saveUninitialized: false,
+    cookie: { maxAge: 24 * 60 * 60 * 1000 } // 24 jam
+}));
+
+// Inisialisasi Passport
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Connect-flash untuk pesan flash
+app.use(flash());
+
+// Middleware untuk menyalurkan pesan flash ke semua view
+app.use((req, res, next) => {
+    res.locals.message = req.flash('message');
+    res.locals.error = req.flash('error');
+    next();
+});
+
+// Mengatur EJS sebagai templating engine
+app.set('view engine', 'ejs');
+// Menentukan lokasi folder views (pastikan ini benar relatif terhadap src/app.js)
+// Jika folder 'views' ada di root proyek (satu tingkat di atas 'src')
+app.set('views', path.join(__dirname, '../views'));
+
+// Konfigurasi express-ejs-layouts HARUS SETELAH app.set('view engine') dan app.set('views')
+app.use(expressLayouts);
+app.set('layout', 'layouts/admin-layout'); // Ini akan mencari views/layouts/admin-layout.ejs
+
+// Mengatur folder 'public' untuk file statis (CSS, JS frontend, gambar)
+app.use(express.static(path.join(__dirname, '../public')));
+
+// Menggunakan route autentikasi (publik, tidak memerlukan login)
+app.use('/', authRoutes);
+
+// Route utama '/' akan dicek autentikasi sebelum diarahkan ke dashboard
+app.get('/', authenticateToken, (req, res) => {
+    switch (req.user.role) {
+        case 'admin':
+            return res.redirect('/dashboard/admin');
+        case 'ppic':
+            return res.redirect('/dashboard/ppic');
+        case 'packing':
+            return res.redirect('/dashboard/packing');
+        case 'mixing':
+            return res.redirect('/dashboard/mixing');
+        case 'milling':
+            return res.redirect('/dashboard/milling');
+        case 'qc':
+            return res.redirect('/dashboard/qc');
+        case 'gudang':
+            return res.redirect('/dashboard/gudang');
+        default:
+            return res.render('dashboard/default', { user: req.user, message: 'Selamat datang di WMS!' }); // Anda mungkin ingin view dashboard default
+    }
+});
+
+// Contoh Route Dashboard yang Dilindungi per Role
+app.get('/dashboard/admin', authenticateToken, authorizeRoles('admin'), (req, res) => {
+    res.render('dashboard/admin', { user: req.user });
+});
+
+app.get('/dashboard/ppic', authenticateToken, authorizeRoles('admin', 'ppic'), (req, res) => {
+    res.render('dashboard/ppic', { user: req.user });
+});
+
+app.get('/dashboard/packing', authenticateToken, authorizeRoles('admin', 'packing'), (req, res) => {
+    res.render('dashboard/packing', { user: req.user });
+});
+
+app.get('/dashboard/mixing', authenticateToken, authorizeRoles('admin', 'mixing'), (req, res) => {
+    res.render('dashboard/mixing', { user: req.user });
+});
+
+app.get('/dashboard/milling', authenticateToken, authorizeRoles('admin', 'milling'), (req, res) => {
+    res.render('dashboard/milling', { user: req.user });
+});
+
+app.get('/dashboard/qc', authenticateToken, authorizeRoles('admin', 'qc'), (req, res) => {
+    res.render('dashboard/qc', { user: req.user });
+});
+
+app.get('/dashboard/gudang', authenticateToken, authorizeRoles('admin', 'gudang'), (req, res) => {
+    res.render('dashboard/gudang', { user: req.user });
+});
+
+// Tambahkan rute untuk /admin/dashboard jika Anda ingin URL ini juga berfungsi
+app.get('/admin/dashboard', authenticateToken, authorizeRoles('admin'), (req, res) => {
+    res.render('dashboard/admin', { user: req.user });
+});
+
+// --- MENGGUNAKAN ROUTES YANG SUDAH DIBUAT ---
+app.use('/admin', authenticateToken, adminRoutes); // Admin general routes (e.g., /admin/users)
+app.use('/admin/users', authenticateToken, authorizeRoles('admin'), userRoutes); // Manajemen pengguna
+app.use('/admin/products', authenticateToken, productRoutes); // Produk
+app.use('/admin/locations', authenticateToken, locationRoutes); // Lokasi
+app.use('/admin/inventory-stocks', authenticateToken, inventoryStockRoutes); // Stok Inventaris
+app.use('/admin/receiving', authenticateToken, receivingRoutes); // PO dan Receiving (BARU)
+
+
+// Middleware penanganan kesalahan umum
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).send('Ada yang salah!');
+});
+
+// Jalankan server
+app.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
+    console.log('\n--- URL Penting ---');
+    console.log(`1. Halaman Login: http://localhost:${PORT}/login`);
+    console.log(`2. Dashboard Admin (Akses setelah Login): http://localhost:${PORT}/dashboard/admin`);
+
+    console.log('\n    --- Manajemen Pengguna (Akses setelah Login sebagai Admin) ---');
+    console.log(`    - Buat Pengguna Baru: http://localhost:${PORT}/admin/users/create`);
+    console.log(`    - Lihat Daftar Pengguna: http://localhost:${PORT}/admin/users`);
+    console.log(`    - Ubah Password Admin: http://localhost:${PORT}/admin/change-password`);
+
+    console.log('\n    --- Manajemen Produk (Akses setelah Login) ---');
+    console.log(`    - Buat Produk Baru: http://localhost:${PORT}/admin/products/create`);
+    console.log(`    - Lihat Daftar Produk: http://localhost:${PORT}/admin/products`);
+
+    console.log('\n    --- Manajemen Lokasi (Akses setelah Login) ---');
+    console.log(`    - Buat Lokasi Baru: http://localhost:${PORT}/admin/locations/create`);
+    console.log(`    - Lihat Daftar Lokasi: http://localhost:${PORT}/admin/locations`);
+
+    console.log('\n    --- Manajemen Inventaris (Akses setelah Login) ---');
+    console.log(`    - Tambah Stok Baru (Barang Masuk): http://localhost:${PORT}/admin/inventory-stocks/add`);
+    console.log(`    - Lihat Daftar Stok Inventaris: http://localhost:${PORT}/admin/inventory-stocks`);
+
+    console.log('\n    --- Manajemen Penerimaan Barang (Purchase Order & Receiving) (BARU - Akses setelah Login) ---');
+    console.log(`    - Buat Purchase Order Baru: http://localhost:${PORT}/admin/receiving/purchase-orders/add`);
+    console.log(`    - Lihat Daftar Purchase Orders: http://localhost:${PORT}/admin/receiving/purchase-orders`);
+    console.log('--------------------');
+});
+```
+
+### views/patrials/sidebar.ejs
+```
+<ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="/dashboard/admin">
+        <div class="sidebar-brand-icon rotate-n-15">
+            <i class="fas fa-laugh-wink"></i>
+        </div>
+        <div class="sidebar-brand-text mx-3">WMS App</div>
+    </a>
+
+    <hr class="sidebar-divider my-0">
+
+    <li class="nav-item active">
+        <a class="nav-link" href="/dashboard/admin">
+            <i class="fas fa-fw fa-tachometer-alt"></i>
+            <span>Dashboard</span>
+        </a>
+    </li>
+
+    <hr class="sidebar-divider">
+
+    <div class="sidebar-heading">
+        Manajemen
+    </div>
+
+    <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
+            aria-expanded="true" aria-controls="collapseTwo">
+            <i class="fas fa-fw fa-cog"></i>
+            <span>Pengguna</span>
+        </a>
+        <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <h6 class="collapse-header">Pengelolaan Pengguna:</h6>
+                <a class="collapse-item" href="/admin/users/create">Buat Pengguna</a>
+                <a class="collapse-item" href="/admin/users">Daftar Pengguna</a>
+            </div>
+        </div>
+    </li>
+
+    <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseProducts"
+            aria-expanded="true" aria-controls="collapseProducts">
+            <i class="fas fa-fw fa-box"></i>
+            <span>Produk</span>
+        </a>
+        <div id="collapseProducts" class="collapse" aria-labelledby="headingProducts" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <h6 class="collapse-header">Pengelolaan Produk:</h6>
+                <a class="collapse-item" href="/admin/products/create">Tambah Produk</a>
+                <a class="collapse-item" href="/admin/products">Daftar Produk</a>
+            </div>
+        </div>
+    </li>
+    <hr class="sidebar-divider d-none d-md-block">
+
+    <div class="text-center d-none d-md-inline">
+        <button class="rounded-circle border-0" id="sidebarToggle"></button>
+    </div>
+</ul>
+```
+
+### views/patrials/topbar.ejs
+```
+<nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+        <i class="fa fa-bars"></i>
+    </button>
+
+    <ul class="navbar-nav ml-auto">
+        <div class="topbar-divider d-none d-sm-block"></div>
+
+        <li class="nav-item dropdown no-arrow">
+            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="mr-2 d-none d-lg-inline text-gray-600 small">
+                    <%= user ? user.fullName : 'Guest' %> (<%= user ? user.role : 'N/A' %>)
+                </span>
+                <img class="img-profile rounded-circle"
+                    src="/img/undraw_profile.svg">
+            </a>
+            <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                aria-labelledby="userDropdown">
+                <a class="dropdown-item" href="#">
+                    <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                    Profile
+                </a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
+                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                    Logout
+                </a>
+            </div>
+        </li>
+    </ul>
+</nav>
+```
+
+### views/patrials/footerr.ejs
+```
+<footer class="sticky-footer bg-white">
+    <div class="container my-auto">
+        <div class="copyright text-center my-auto">
+            <span>Copyright &copy; Your WMS App 2024</span>
+        </div>
+    </div>
+</footer>
+```
+
+### views/partials/logout-modal.ejs
+```
+<div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                <a class="btn btn-primary" href="/logout">Logout</a>
+            </div>
+        </div>
+    </div>
+</div>
+```
+
+
+
+### ubah file wms-app/src/controllers/authController.js
+```
+const crypto = require('crypto');
+const nodemailer = require('nodemailer');
+// src/controllers/authController.js
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const User = require('../models/User');
+require('dotenv').config(); // Memuat variabel lingkungan
+
+// Transporter Nodemailer
+const transporter = nodemailer.createTransport({
+    host: process.env.EMAIL_HOST,
+    port: process.env.EMAIL_PORT,
+    secure: false, // Gunakan 'true' jika port adalah 465 (SSL/TLS)
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+    }
+});
+
+// Ubah showLoginForm
+exports.showLoginForm = (req, res) => {
+    // Rendah halaman login tanpa layout utama admin
+    // Variabel message dan error sudah disalurkan melalui res.locals di app.js
+    // Jadi kita tidak perlu meneruskannya secara eksplisit di sini
+    res.render('auth/login');
+};
+
+exports.login = async (req, res) => {
+    const { username, password } = req.body;
+
+    if (!username || !password) {
+        // Gunakan flash message untuk error
+        req.flash('error', 'Username dan password harus diisi.');
+        return res.redirect('/login'); // Redirect kembali ke halaman login
+    }
+
+    try {
+        const user = await User.findByUsername(username);
+
+        if (!user) {
+            req.flash('error', 'Username atau password salah.');
+            return res.redirect('/login');
+        }
+
+        const isMatch = await bcrypt.compare(password, user.password_hash);
+
+        if (!isMatch) {
+            req.flash('error', 'Username atau password salah.');
+            return res.redirect('/login');
+        }
+
+        const token = jwt.sign(
+            { id: user.id, role: user.role, fullName: user.full_name },
+            process.env.JWT_SECRET,
+            { expiresIn: '1h' }
+        );
+
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            maxAge: 3600000
+        });
+
+        // Redirect pengguna ke dashboard yang sesuai
+        switch (user.role) {
+            case 'admin':
+                return res.redirect('/dashboard/admin');
+            case 'ppic':
+                return res.redirect('/dashboard/ppic');
+            case 'packing':
+                return res.redirect('/dashboard/packing');
+            case 'mixing':
+                return res.redirect('/dashboard/mixing');
+            case 'milling':
+                return res.redirect('/dashboard/milling');
+            case 'qc':
+                return res.redirect('/dashboard/qc');
+            case 'gudang':
+                return res.redirect('/dashboard/gudang');
+            default:
+                req.flash('message', 'Selamat datang di WMS!');
+                return res.redirect('/');
+        }
+
+    } catch (err) {
+        console.error('Login error:', err);
+        req.flash('error', 'Terjadi kesalahan server saat login.');
+        res.redirect('/login');
+    }
+};
+
+exports.logout = (req, res) => {
+    res.clearCookie('token');
+    req.flash('message', 'Anda telah berhasil logout.');
+    res.redirect('/login');
+};
+
+// Ubah showRegisterForm
+exports.showRegisterForm = (req, res) => {
+    // Rendah halaman register tanpa layout utama admin
+    res.render('auth/register');
+};
+
+exports.register = async (req, res) => {
+    const { username, password, confirm_password, full_name, email, role } = req.body;
+
+    if (password !== confirm_password) {
+        req.flash('error', 'Password dan konfirmasi password tidak cocok.');
+        return res.redirect('/register');
+    }
+
+    try {
+        const existingUser = await User.findByUsername(username) || await User.findByEmail(email);
+        if (existingUser) {
+            req.flash('error', 'Username atau email sudah digunakan.');
+            return res.redirect('/register');
+        }
+
+        const saltRounds = 10;
+        const password_hash = await bcrypt.hash(password, saltRounds);
+
+        const newUser = {
+            username,
+            password_hash,
+            full_name,
+            email,
+            role: role || 'user'
+        };
+
+        const userId = await User.create(newUser);
+
+        const verificationToken = crypto.randomBytes(32).toString('hex');
+        await User.setVerificationToken(userId, verificationToken);
+
+        const verificationUrl = `${req.protocol}://${req.get('host')}/verify-email?token=${verificationToken}`;
+        
+        await transporter.sendMail({
+            from: process.env.EMAIL_FROM,
+            to: email,
+            subject: 'Verifikasi Email Anda',
+            html: `Silakan klik link berikut untuk verifikasi email: <a href="${verificationUrl}">${verificationUrl}</a>`
+        });
+
+        // Pastikan Anda memiliki view 'auth/register-success.ejs'
+        // dan ia tidak menggunakan layout admin
+        req.flash('message', 'Registrasi berhasil! Silakan cek email Anda untuk verifikasi.');
+        res.redirect('/login'); // Redirect ke login setelah registrasi sukses
+        // Atau jika ingin ke halaman sukses terpisah: res.render('auth/register-success', { email });
+
+    } catch (err) {
+        console.error('Registration error:', err);
+        req.flash('error', 'Terjadi kesalahan saat registrasi.');
+        res.redirect('/register');
+    }
+};
+
+exports.showForgotPasswordForm = (req, res) => {
+    res.render('auth/forgot-password'); // Flash messages akan diakses via res.locals
+};
+
+exports.forgotPassword = async (req, res) => {
+    const { email } = req.body;
+
+    try {
+        const user = await User.findByEmail(email);
+        if (!user) {
+            req.flash('error', 'Email tidak ditemukan.');
+            return res.redirect('/forgot-password');
+        }
+
+        const resetToken = crypto.randomBytes(32).toString('hex');
+        const resetTokenExpires = new Date(Date.now() + 3600000); // 1 jam
+
+        await User.setResetToken(user.id, resetToken, resetTokenExpires);
+
+        const resetUrl = `${req.protocol}://${req.get('host')}/reset-password?token=${resetToken}`;
+        
+        await transporter.sendMail({
+            from: process.env.EMAIL_FROM,
+            to: user.email,
+            subject: 'Reset Password Anda',
+            html: `Silakan klik link berikut untuk reset password: <a href="${resetUrl}">${resetUrl}</a>`
+        });
+
+        req.flash('message', 'Link reset password telah dikirim ke email Anda.');
+        res.redirect('/forgot-password');
+
+    } catch (err) {
+        console.error('Forgot password error:', err);
+        req.flash('error', 'Terjadi kesalahan saat memproses permintaan reset password.');
+        res.redirect('/forgot-password');
+    }
+};
+
+exports.showResetPasswordForm = async (req, res) => {
+    const { token } = req.query;
+
+    try {
+        const user = await User.findByResetToken(token);
+        if (!user) {
+            req.flash('error', 'Token reset password tidak valid atau sudah kadaluarsa.');
+            return res.redirect('/login'); // Kembali ke login jika token tidak valid
+        }
+
+        res.render('auth/reset-password', { token }); // Teruskan token ke view
+    } catch (err) {
+        console.error('Reset password error:', err);
+        req.flash('error', 'Terjadi kesalahan saat memproses permintaan reset password.');
+        res.redirect('/login');
+    }
+};
+
+exports.resetPassword = async (req, res) => {
+    const { token, password, confirm_password } = req.body;
+
+    if (password !== confirm_password) {
+        req.flash('error', 'Password dan konfirmasi password tidak cocok.');
+        return res.redirect(`/reset-password?token=${token}`);
+    }
+
+    try {
+        const user = await User.findByResetToken(token);
+        if (!user) {
+            req.flash('error', 'Token reset password tidak valid atau sudah kadaluarsa.');
+            return res.redirect('/login');
+        }
+
+        const saltRounds = 10;
+        const password_hash = await bcrypt.hash(password, saltRounds);
+
+        await User.updatePassword(user.id, password_hash);
+
+        req.flash('message', 'Password Anda berhasil direset. Silakan login.');
+        res.redirect('/login');
+
+    } catch (err) {
+        console.error('Reset password error:', err);
+        req.flash('error', 'Terjadi kesalahan saat reset password.');
+        res.redirect(`/reset-password?token=${token}`);
+    }
+};
+
+exports.verifyEmail = async (req, res) => {
+    const { token } = req.query;
+
+    try {
+        const isVerified = await User.verifyEmail(token);
+        if (isVerified) {
+            req.flash('message', 'Email Anda berhasil diverifikasi! Silakan login.');
+            res.redirect('/login');
+        } else {
+            req.flash('error', 'Verifikasi email gagal atau token tidak valid.');
+            res.redirect('/login'); // Kembali ke login dengan pesan error
+        }
+    } catch (err) {
+        console.error('Email verification error:', err);
+        req.flash('error', 'Terjadi kesalahan saat verifikasi email.');
+        res.redirect('/login');
+    }
+};
+```
+
+### rubah wms-app/views/auth
+### login.ejs
+```
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login WMS App</title>
+    <link href="/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link href="/css/sb-admin-2.min.css" rel="stylesheet">
+
+    <style>
+        /* CSS styling Anda yang sudah ada */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .login-container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            text-align: center;
+        }
+        .login-container h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .login-container label {
+            display: block;
+            text-align: left;
+            margin-bottom: 5px;
+            color: #555;
+        }
+        .login-container input[type="text"],
+        .login-container input[type="password"],
+        .login-container input[type="email"] { /* Tambahkan type="email" */
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .login-container button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .login-container button:hover {
+            background-color: #0056b3;
+        }
+        /* Styling untuk pesan flash */
+        .alert {
+            padding: 0.75rem 1.25rem;
+            margin-bottom: 1rem;
+            border: 1px solid transparent;
+            border-radius: 0.25rem;
+        }
+        .alert-danger {
+            color: #721c24;
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+        }
+        .alert-success {
+            color: #155724;
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+        }
+        /* Tambahkan styling untuk form-control-user jika Anda menggunakan class SB Admin 2 */
+        .form-control-user {
+            border-radius: 10rem; /* Contoh border-radius dari SB Admin 2 */
+            padding: 1.5rem 1rem; /* Contoh padding dari SB Admin 2 */
+            font-size: 0.8rem; /* Contoh font-size dari SB Admin 2 */
+        }
+        .btn-user {
+            border-radius: 10rem;
+            padding: 0.75rem 1rem;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h2>Login WMS</h2>
+        <% if (typeof error !== 'undefined' && error && error.length > 0) { %>
+            <div class="alert alert-danger"><%= error %></div>
+        <% } %>
+        <% if (typeof message !== 'undefined' && message && message.length > 0) { %>
+            <div class="alert alert-success"><%= message %></div>
+        <% } %>
+        <form action="/login" method="POST">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+
+            <button type="submit">Login</button>
+        </form>
+        <p><a href="/forgot-password">Lupa Password?</a></p>
+        <p><a href="/register">Buat Akun Baru!</a></p>
+    </div>
+    <script src="/vendor/jquery/jquery.min.js"></script>
+    <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/vendor/jquery-easing/jquery.easing.min.js"></script>
+    <script src="/js/sb-admin-2.min.js"></script>
+</body>
+</html>
+```
+
+### views/auth/register.ejs
+```
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrasi Akun Baru - WMS App</title>
+    <link href="/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link href="/css/sb-admin-2.min.css" rel="stylesheet">
+    <style>
+        /* CSS styling Anda yang sudah ada dari login.ejs, atau sesuaikan */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .login-container { /* Anda bisa ganti nama class ini menjadi register-container jika mau */
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            width: 350px; /* Mungkin sedikit lebih lebar dari login */
+            text-align: center;
+        }
+        .login-container h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .login-container label {
+            display: block;
+            text-align: left;
+            margin-bottom: 5px;
+            color: #555;
+        }
+        .login-container input[type="text"],
+        .login-container input[type="password"],
+        .login-container input[type="email"] {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .login-container button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .login-container button:hover {
+            background-color: #0056b3;
+        }
+        /* Styling untuk pesan flash */
+        .alert {
+            padding: 0.75rem 1.25rem;
+            margin-bottom: 1rem;
+            border: 1px solid transparent;
+            border-radius: 0.25rem;
+        }
+        .alert-danger {
+            color: #721c24;
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+        }
+        .alert-success {
+            color: #155724;
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h2>Registrasi Akun Baru</h2>
+        <% if (typeof error !== 'undefined' && error && error.length > 0) { %>
+            <div class="alert alert-danger"><%= error %></div>
+        <% } %>
+        <% if (typeof message !== 'undefined' && message && message.length > 0) { %>
+            <div class="alert alert-success"><%= message %></div>
+        <% } %>
+
+        <form action="/register" method="POST">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+
+            <label for="full_name">Nama Lengkap:</label>
+            <input type="text" id="full_name" name="full_name" required>
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+
+            <label for="confirm_password">Konfirmasi Password:</label>
+            <input type="password" id="confirm_password" name="confirm_password" required>
+
+            <button type="submit">Daftar</button>
+        </form>
+        <p>Sudah punya akun? <a href="/login">Login disini</a></p>
+    </div>
+    <script src="/vendor/jquery/jquery.min.js"></script>
+    <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/vendor/jquery-easing/jquery.easing.min.js"></script>
+    <script src="/js/sb-admin-2.min.js"></script>
+</body>
+</html>
+```
+
+
+### views/auth/forgot-password.ejs
+```
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lupa Password - WMS App</title>
+    <link href="/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link href="/css/sb-admin-2.min.css" rel="stylesheet">
+    <style>
+        /* CSS styling Anda yang sudah ada dari login.ejs, atau sesuaikan */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .login-container { /* Anda bisa ganti nama class ini jika mau */
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            text-align: center;
+        }
+        .login-container h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .login-container label {
+            display: block;
+            text-align: left;
+            margin-bottom: 5px;
+            color: #555;
+        }
+        .login-container input[type="email"] {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .login-container button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .login-container button:hover {
+            background-color: #0056b3;
+        }
+        /* Styling untuk pesan flash */
+        .alert {
+            padding: 0.75rem 1.25rem;
+            margin-bottom: 1rem;
+            border: 1px solid transparent;
+            border-radius: 0.25rem;
+        }
+        .alert-danger {
+            color: #721c24;
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+        }
+        .alert-success {
+            color: #155724;
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h2>Lupa Password</h2>
+        <% if (typeof error !== 'undefined' && error && error.length > 0) { %>
+            <div class="alert alert-danger"><%= error %></div>
+        <% } %>
+        <% if (typeof message !== 'undefined' && message && message.length > 0) { %>
+            <div class="alert alert-success"><%= message %></div>
+        <% } %>
+
+        <form action="/forgot-password" method="POST">
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+
+            <button type="submit">Kirim Link Reset</button>
+        </form>
+        <p><a href="/login">Kembali ke login</a></p>
+    </div>
+    <script src="/vendor/jquery/jquery.min.js"></script>
+    <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/vendor/jquery-easing/jquery.easing.min.js"></script>
+    <script src="/js/sb-admin-2.min.js"></script>
+</body>
+</html>
+```
+
+### views/auth/reset-password.ejs
+```
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reset Password - WMS App</title>
+    <link href="/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link href="/css/sb-admin-2.min.css" rel="stylesheet">
+    <style>
+        /* CSS styling Anda yang sudah ada dari login.ejs, atau sesuaikan */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .login-container { /* Anda bisa ganti nama class ini jika mau */
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            text-align: center;
+        }
+        .login-container h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .login-container label {
+            display: block;
+            text-align: left;
+            margin-bottom: 5px;
+            color: #555;
+        }
+        .login-container input[type="password"] {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .login-container button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .login-container button:hover {
+            background-color: #0056b3;
+        }
+        /* Styling untuk pesan flash */
+        .alert {
+            padding: 0.75rem 1.25rem;
+            margin-bottom: 1rem;
+            border: 1px solid transparent;
+            border-radius: 0.25rem;
+        }
+        .alert-danger {
+            color: #721c24;
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+        }
+        .alert-success {
+            color: #155724;
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h2>Reset Password</h2>
+        <% if (typeof error !== 'undefined' && error && error.length > 0) { %>
+            <div class="alert alert-danger"><%= error %></div>
+        <% } %>
+        <% if (typeof message !== 'undefined' && message && message.length > 0) { %>
+            <div class="alert alert-success"><%= message %></div>
+        <% } %>
+
+        <% if (typeof token !== 'undefined' && token) { %> <form action="/reset-password" method="POST">
+                <input type="hidden" name="token" value="<%= token %>">
+                
+                <label for="password">Password Baru:</label>
+                <input type="password" id="password" name="password" required>
+
+                <label for="confirm_password">Konfirmasi Password Baru:</label>
+                <input type="password" id="confirm_password" name="confirm_password" required>
+
+                <button type="submit">Reset Password</button>
+            </form>
+        <% } else { %>
+            <p>Link reset password tidak valid atau sudah kadaluarsa.</p>
+            <p><a href="/forgot-password">Minta link reset password baru</a></p>
+        <% } %>
+    </div>
+    <script src="/vendor/jquery/jquery.min.js"></script>
+    <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/vendor/jquery-easing/jquery.easing.min.js"></script>
+    <script src="/js/sb-admin-2.min.js"></script>
+</body>
+</html>
+```
+
+### views/auth/register-success.ejs
+```
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrasi Berhasil - WMS App</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding-top: 50px; }
+        h1 { color: #28a745; } /* Hijau untuk sukses */
+        p { margin-bottom: 20px; }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        a { color: #007bff; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Registrasi Berhasil!</h1>
+        <p>Email verifikasi telah dikirim ke <strong><%= typeof email !== 'undefined' ? email : 'alamat email Anda' %></strong>. Silakan cek email Anda untuk verifikasi akun.</p>
+        <p><a href="/login">Kembali ke halaman login</a></p>
+    </div>
+</body>
+</html>
+```
+
+### views/auth/reset-password-success.ejs
+```
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Password Berhasil Direset - WMS App</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding-top: 50px; }
+        h1 { color: #28a745; } /* Hijau untuk sukses */
+        p { margin-bottom: 20px; }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        a { color: #007bff; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Password Berhasil Direset!</h1>
+        <p>Password Anda telah berhasil diubah. Silakan login dengan password baru Anda.</p>
+        <p><a href="/login">Login sekarang</a></p>
+    </div>
+</body>
+</html>
+```
+### views/auth/verify-email-success.ejs
+```
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verifikasi Email Berhasil - WMS App</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding-top: 50px; }
+        h1 { color: #28a745; }
+        p { margin-bottom: 20px; }
+        .container { max-width: 600px; margin: 0 auto; background-color: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        a { color: #007bff; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Verifikasi Email Berhasil!</h1>
+        <p>Email Anda telah berhasil diverifikasi. Anda sekarang dapat login.</p>
+        <p><a href="/login">Login sekarang</a></p>
+    </div>
+</body>
+</html>
+```
+
+### views/auth/verify-email-error.ejs
+```
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verifikasi Email Gagal - WMS App</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding-top: 50px; }
+        h1 { color: #dc3545; } /* Merah untuk error */
+        p { margin-bottom: 20px; }
+        .container { max-width: 600px; margin: 0 auto; background-color: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        a { color: #007bff; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Verifikasi Email Gagal!</h1>
+        <p>Token verifikasi tidak valid atau sudah kadaluarsa. Silakan coba lagi.</p>
+        <p><a href="/register">Daftar ulang</a> atau <a href="/login">Kembali ke login</a></p>
+    </div>
+</body>
+</html>
+```
+
+### Temukan bagian ini di src/app.js Anda
+```
+// Middleware untuk menyalurkan pesan flash ke semua view
+app.use((req, res, next) => {
+    res.locals.message = req.flash('message');
+    res.locals.error = req.flash('error');
+    next();
+});
+```
+
+Ubah menjadi seperti ini:
+```
+// Middleware untuk menyalurkan pesan flash dan data user ke semua view
+app.use((req, res, next) => {
+    res.locals.message = req.flash('message');
+    res.locals.error = req.flash('error');
+    // Tambahkan baris ini untuk menyalurkan data user
+    // req.user akan disetel oleh passport/authenticateToken setelah login
+    res.locals.user = req.user || null; // Pastikan user selalu ada, meskipun null
+    next();
+});
+```
+
+### Ganti konten views/dashboard/admin.ejs
+```
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>WMS App - Admin Dashboard</title>
+
+    <link href="/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+        rel="stylesheet">
+
+    <link href="/css/sb-admin-2.min.css" rel="stylesheet">
+    </head>
+<body id="page-top">
+    <div id="wrapper">
+        <%- include('../partials/sidebar') %>
+        <div id="content-wrapper" class="d-flex flex-column">
+            <div id="content">
+                <%- include('../partials/topbar') %>
+                <%- body %> </div>
+            <%- include('../partials/footer') %>
+        </div>
+    </div>
+    <%- include('../partials/logout-modal') %>
+
+    <script src="/vendor/jquery/jquery.min.js"></script>
+    <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/vendor/jquery-easing/jquery.easing.min.js"></script>
+    <script src="/js/sb-admin-2.min.js"></script>
+    </body>
+</html>
 ```
 
 ### C. Modul Tambahan & Peningkatan (Enhancements)
