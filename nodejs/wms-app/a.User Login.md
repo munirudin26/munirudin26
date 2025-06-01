@@ -132,6 +132,38 @@ async function hashPassword() {
 hashPassword();
 ```
 
+```
+// hash_password.js
+const bcrypt = require('bcryptjs');
+
+const saltRounds = 10; // Jumlah salt rounds, semakin tinggi semakin aman tapi semakin lambat
+
+async function hashPassword(password) {
+    try {
+        const salt = await bcrypt.genSalt(saltRounds);
+        const hash = await bcrypt.hash(password, salt);
+        console.log(`Password: ${password}`);
+        console.log(`Hashed Password: ${hash}`);
+        return hash;
+    } catch (err) {
+        console.error('Error hashing password:', err);
+        throw err;
+    }
+}
+
+// Contoh penggunaan:
+// Untuk menjalankan ini, cukup buka terminal di root folder project dan jalankan:
+// node hash_password.js "your_admin_password_here"
+
+const passwordToHash = process.argv[2]; // Ambil password dari argumen command line
+
+if (passwordToHash) {
+    hashPassword(passwordToHash);
+} else {
+    console.log('Usage: node hash_password.js <password_to_hash>');
+}
+```
+
 Jalankan file tersebut menggunakan Node.js di terminal:
 ```
 node hash_password.js
